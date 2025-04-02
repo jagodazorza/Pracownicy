@@ -53,7 +53,7 @@ namespace Pracownicy
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-            praco.wiek = textBox3.TextLength;
+            praco.wiek = int.Parse(textBox3.Text);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

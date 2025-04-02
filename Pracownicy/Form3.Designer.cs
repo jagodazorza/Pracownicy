@@ -52,6 +52,7 @@
             button2.TabIndex = 1;
             button2.Text = "Usun";
             button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // button3
             // 
@@ -84,6 +85,7 @@
             Controls.Add(button1);
             Name = "Form3";
             Text = "Form1";
+            Load += Form3_Load;
             ResumeLayout(false);
         }
 

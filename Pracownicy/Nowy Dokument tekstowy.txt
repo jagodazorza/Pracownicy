@@ -1,0 +1,4 @@
+ID,Imie,Nazwisko,Wiek,Stanowisko
+581,,,20,
+531,Jagoda,B,10,Kelner
+807,Jery,Jery,20,Asystent kucharza

@@ -1,11 +1,39 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Pracownicy
 {
+
     public partial class Form3 : Form
     {
         DataGridView dataGridView1 = new DataGridView();
+        public string createID()
+        {
+            Random random = new Random();
+            int rand = random.Next(300, 900);
+            bool unique = false;
+            while (!unique)
+            {
+                unique = true; // Założenie, że liczba jest unikalna
+
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    if (row.Cells[0].Value != null && int.TryParse(row.Cells[0].Value.ToString(), out int existingValue))
+                    {
+                        if (existingValue == rand)
+                        {
+                            unique = false; // Jeśli liczba już istnieje, przerywamy pętlę i szukamy nowej
+                            rand = random.Next(300, 900); // Generujemy nową liczbę
+                            break;
+                        }
+                    }
+                }
+            }
+            return rand.ToString();
+
+        }
         public Form3()
         {
             InitializeComponent();
@@ -19,10 +47,6 @@ namespace Pracownicy
             dataGridView1.Columns.Add("Wiek", "Wiek");
             dataGridView1.Columns.Add("Stanowisko", "Stanowisko");
 
-
-            // Dodanie danych do siatki
-            dataGridView1.Rows.Add(new object[] { "id", "Maja", "Zwolinska", "17", "uczen" });
-            dataGridView1.Rows.Add(new object[] { "id", "Konrad", "Basza", "20", "uczen" });
 
             Controls.Add(dataGridView1);
         }
@@ -41,7 +65,7 @@ namespace Pracownicy
 
         public void Dodawanie(Pracownik praco)
         {
-            dataGridView1.Rows.Add(new object[] { "111", praco.imie, praco.nazwisko, praco.wiek.ToString(), praco.stanowisko });
+            dataGridView1.Rows.Add(new object[] { createID(), praco.imie, praco.nazwisko, praco.wiek.ToString(), praco.stanowisko });
         }
 
         public void Usuwanie()
@@ -52,7 +76,7 @@ namespace Pracownicy
         private void ExportToCSV(DataGridView dataGridView1, string filePath)
         {
             // Tworzenie nagłówka pliku CSV
-            string csvContent = "ID, Imie, Nazwisko, Stanowisko" + Environment.NewLine;
+            string csvContent = "ID,Imie,Nazwisko,Wiek,Stanowisko" + Environment.NewLine;
             // Dodawanie danych z DataGridView
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
@@ -66,10 +90,13 @@ namespace Pracownicy
             }
             // Zapisanie zawartości do pliku CSV
             File.WriteAllText(filePath, csvContent);
+            MessageBox.Show("zapisano  " + csvContent + " do pliku " + filePath);
+
         }
 
         private void LoadCSVToDataGridView(string filePath)
         {
+
             // Sprawdź, czy plik istnieje
             if (!File.Exists(filePath))
             {
@@ -81,6 +108,7 @@ namespace Pracownicy
             string[] lines = File.ReadAllLines(filePath);
 
             // Tworzenie tabeli danych
+
             DataTable dataTable = new DataTable();
             // Dodanie kolumn na podstawie nagłówka
             string[] headers = lines[0].Split(",");
@@ -95,12 +123,19 @@ namespace Pracownicy
                 dataTable.Rows.Add(values);
             }
             // Przypisanie tabeli danych do DataGridView
+            dataGridView1.Columns.Clear();
             dataGridView1.DataSource = dataTable;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ExportToCSV(dataGridView1, "a.txt");
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Pliki CSV (*.csv)|*.csv|Wszystkie pliki (*.*)|*.*";
+            openFileDialog1.Title = "Wybierz plik CSV do wczytania";
+            openFileDialog1.ShowDialog();
+            // Jeśli użytkownik wybierze plik i zatwierdzi, wczytaj dane z pliku CSV
+            if (openFileDialog1.FileName != "")
+            { ExportToCSV(dataGridView1, openFileDialog1.FileName); }
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -115,6 +150,25 @@ namespace Pracownicy
                 // Wywołanie funkcji wczytującej dane z pliku CSV
                 LoadCSVToDataGridView(openFileDialog1.FileName);
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+                {
+                    if (!row.IsNewRow) // Nie usuwamy pustego wiersza na końcu
+                    {
+                        dataGridView1.Rows.Remove(row);
+                    }
+                }
+            }
+        }
+
+        private void Form3_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
