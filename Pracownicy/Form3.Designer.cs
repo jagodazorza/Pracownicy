@@ -35,6 +35,8 @@
             button5 = new Button();
             button6 = new Button();
             textBox1 = new TextBox();
+            button52 = new Button();
+            button62 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -77,6 +79,26 @@
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 
+            // button52
+            // 
+            button52.Location = new Point(121, 305);
+            button52.Name = "button52";
+            button52.Size = new Size(150, 34);
+            button52.TabIndex = 4;
+            button52.Text = "Zapisz do JSON";
+            button52.UseVisualStyleBackColor = true;
+            button52.Click += button52_Click;
+            // 
+            // button62
+            // 
+            button62.Location = new Point(564, 305);
+            button62.Name = "button62";
+            button62.Size = new Size(150, 34);
+            button62.TabIndex = 5;
+            button62.Text = "Odczyt JSON";
+            button62.UseVisualStyleBackColor = true;
+            button62.Click += button6_Click;
+            // 
             // button5
             // 
             button5.Location = new Point(159, 385);
@@ -113,6 +135,8 @@
             Controls.Add(textBox1);
             Controls.Add(button6);
             Controls.Add(button5);
+            Controls.Add(button62);
+            Controls.Add(button52);
             Controls.Add(button4);
             Controls.Add(button3);
             Controls.Add(button2);
@@ -134,5 +158,7 @@
         private Button button6;
         private Button button7;
         private TextBox textBox1;
+        private Button button52;
+        private Button button62;
     }
 }
