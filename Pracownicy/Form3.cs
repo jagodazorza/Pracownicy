@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Text.Json;
 using System.Windows.Forms;
+using System.Text.Json;
 
 namespace Pracownicy
 {
@@ -9,6 +11,7 @@ namespace Pracownicy
     public partial class Form3 : Form
     {
         DataGridView dataGridView1 = new DataGridView();
+        List<Pracownik> pracownikowLista = new List<Pracownik>();
         public string createID()
         {
             Random random = new Random();
@@ -68,10 +71,6 @@ namespace Pracownicy
             dataGridView1.Rows.Add(new object[] { createID(), praco.imie, praco.nazwisko, praco.wiek.ToString(), praco.stanowisko });
         }
 
-        public void Usuwanie()
-        {
-
-        }
 
         private void ExportToCSV(DataGridView dataGridView1, string filePath)
         {
@@ -127,6 +126,23 @@ namespace Pracownicy
             dataGridView1.DataSource = dataTable;
         }
 
+        public static void SerializeListToJSON(List<Pracownik> lista, string path)
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            string json = JsonSerializer.Serialize(lista, options);
+            File.WriteAllText(path, json);
+        }
+
+        public static List<Pracownik> DeserializeListFromJSON(string path)
+        {
+            string json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<List<Pracownik>>(json);
+        }
+
+
         private void button3_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -169,6 +185,49 @@ namespace Pracownicy
         private void Form3_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Pliki JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*";
+            openFileDialog1.Title = "Wczytaj dane z JSON";
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                List<Pracownik> lista = DeserializeListFromJSON(openFileDialog1.FileName);
+
+                dataGridView1.Rows.Clear();
+                foreach (var p in lista)
+                {
+                    dataGridView1.Rows.Add(new object[] { createID(), p.imie, p.nazwisko, p.wiek.ToString(), p.stanowisko });
+                }
+
+            }
+        }
+            private void button52_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "Pliki JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*";
+            saveFileDialog1.Title = "Zapisz dane jako JSON";
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    if (!row.IsNewRow)
+                    {
+                        string imie = row.Cells[1].Value?.ToString() ?? "";
+                        string nazwisko = row.Cells[2].Value?.ToString() ?? "";
+                        int wiek = int.TryParse(row.Cells[3].Value?.ToString(), out int w) ? w : 0;
+                        string stanowisko = row.Cells[4].Value?.ToString() ?? "";
+
+                        Pracownik p = new Pracownik(imie, nazwisko, wiek, stanowisko);
+                        pracownikowLista.Add(p);
+                    }
+                }
+
+                SerializeListToJSON(pracownikowLista, saveFileDialog1.FileName);
+            }
         }
     }
 }
