@@ -5,6 +5,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows.Forms;
 using System.Text.Json;
+using System.Xml.Serialization;
 
 
 namespace Pracownicy
@@ -267,28 +268,30 @@ namespace Pracownicy
                 string filePath = openFileDialog1.FileName;
                 // Wywołanie funkcji wczytującej dane z pliku XML
                 listaPracownikow = DeserializeListFromXML(filePath);
-
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Pliki JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*";
-            openFileDialog1.Title = "Wczytaj dane z JSON";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                List<Pracownik> lista = DeserializeListFromJSON(openFileDialog1.FileName);
-
-                dataGridView1.Rows.Clear();
-                foreach (var p in lista)
-                {
-                    dataGridView1.Rows.Add(new object[] { createID(), p.imie, p.nazwisko, p.wiek.ToString(), p.stanowisko });
-                }
-
             }
+
         }
-            private void button52_Click(object sender, EventArgs e)
+
+            private void button62_Click(object sender, EventArgs e)
+        {
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+                openFileDialog1.Filter = "Pliki JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*";
+                openFileDialog1.Title = "Wczytaj dane z JSON";
+
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    List<Pracownik> lista = DeserializeListFromJSON(openFileDialog1.FileName);
+
+                    dataGridView1.Rows.Clear();
+                    foreach (var p in lista)
+                    {
+                        dataGridView1.Rows.Add(new object[] { createID(), p.imie, p.nazwisko, p.wiek.ToString(), p.stanowisko });
+                    }
+
+                }
+        }
+
+        private void button52_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "Pliki JSON (*.json)|*.json|Wszystkie pliki (*.*)|*.*";
@@ -328,4 +331,3 @@ namespace Pracownicy
             }
         }
     }
-}

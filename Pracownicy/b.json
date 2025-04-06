@@ -1,20 +1,5 @@
 [
-  {
-    "imie": "konrad",
-    "nazwisko": "seksowny",
-    "wiek": 2,
-    "stanowisko": "Kucharz"
-  },
-  {
-    "imie": "jagoda",
-    "nazwisko": "zorza",
-    "wiek": 2,
-    "stanowisko": "Kelner"
-  },
-  {
-    "imie": "jjj",
-    "nazwisko": "",
-    "wiek": 2,
-    "stanowisko": ""
-  }
+  {},
+  {},
+  {}
 ]
