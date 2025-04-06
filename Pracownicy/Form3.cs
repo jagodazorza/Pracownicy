@@ -1,14 +1,40 @@
-﻿using System;
+﻿using Pracownicy;
+using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Xml.Serialization;
+
 
 namespace Pracownicy
 {
 
+
+
+
     public partial class Form3 : Form
     {
         DataGridView dataGridView1 = new DataGridView();
+        List<Pracownik> listaPracownikow = new List<Pracownik>();
+
+        public static void SerializeListToXML(List<Pracownik> lista, string path)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Pracownik>));
+            using (StreamWriter writer = new StreamWriter(path))
+            {
+                serializer.Serialize(writer, lista);
+            }
+        }
+
+        public static List<Pracownik> DeserializeListFromXML(string path)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Pracownik>));
+            using (StreamReader reader = new StreamReader(path))
+            {
+                return (List<Pracownik>)serializer.Deserialize(reader);
+            }
+        }
         public string createID()
         {
             Random random = new Random();
@@ -127,6 +153,9 @@ namespace Pracownicy
             dataGridView1.DataSource = dataTable;
         }
 
+    
+       
+  
         private void button3_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -169,6 +198,77 @@ namespace Pracownicy
         private void Form3_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Pliki XML (*.xml)|*.xml|Wszystkie pliki (*.*)|*.*";
+            openFileDialog1.Title = "Wybierz plik XML do wczytania";
+            openFileDialog1.ShowDialog();
+            // Jeśli użytkownik wybierze plik i zatwierdzi, wczytaj dane z pliku CSV
+            if (openFileDialog1.FileName != "")
+            {
+                foreach (DataGridViewRow row in dataGridView1.Rows) //robi to dla kazdego
+                {
+                    // Pomijaj wiersze niemieszczące się w DataGridView (np. wiersz zaznaczania)
+                    if (!row.IsNewRow)
+                    {
+                        string imie = row.Cells[1].Value?.ToString() ?? "";
+                        string nazwisko = row.Cells[2].Value?.ToString() ?? "";
+                        int wiek = int.TryParse(row.Cells[3].Value?.ToString(), out int w) ? w : 0;
+                        string stanowisko = row.Cells[4].Value?.ToString() ?? "";
+
+                        Pracownik p = new Pracownik(imie, nazwisko, wiek, stanowisko);
+                        listaPracownikow.Add(p);
+
+                        p.DisplayInfo();
+                       
+                    }
+                }
+
+           
+                    SerializeListToXML(listaPracownikow, openFileDialog1.FileName);
+               
+            }
+
+
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Pliki XML (*.xml)|*.xml|Wszystkie pliki (*.*)|*.*";
+            openFileDialog1.Title = "Wybierz plik XML do wczytania";
+            openFileDialog1.ShowDialog();
+            // Jeśli użytkownik wybierze plik i zatwierdzi, wczytaj dane z pliku XML
+            if (openFileDialog1.FileName != "")
+            {
+                string filePath = openFileDialog1.FileName;
+                // Wywołanie funkcji wczytującej dane z pliku XML
+                listaPracownikow = DeserializeListFromXML(filePath);
+
+               
+
+                // Wypełnienie tabeli
+                foreach (var pracownik in listaPracownikow)
+                {
+                    dataGridView1.Rows.Add(new object[]
+                    {
+                    createID(), // Możesz też użyć stałego ID z pliku, jeśli było serializowane
+                    pracownik.imie,
+                    pracownik.nazwisko,
+                    pracownik.wiek,
+                    pracownik.stanowisko
+                    });
+                }
+            }
         }
     }
 }
